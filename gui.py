@@ -60,18 +60,20 @@ class audioPrompt(PPrompt):
     def __init__(self):
         self.audioPath = Path('./audio')
         self.tracks = {x.stem : x for x in self.audioPath.iterdir() if x.is_file()}
+        self.track_list = list(self.tracks.keys())
+        self.track_list.sort()
         super().__init__()
 
     def listTracks(self):
         print('\nTracks:')
-        for idx, track in enumerate(self.tracks):
+        for idx, track in enumerate(self.track_list):
             print(f'  {idx+1:<2d} : {track}')
 
         print('')
 
     def play(self, track):
-        print(f'\nThis is where {list(self.tracks.keys())[track]} would be played.')
-        print(f'  File: {self.tracks[list(self.tracks.keys())[track]]}')
+        print(f'\nThis is where {self.track_list[track]} would be played.')
+        print(f'  File: {self.tracks[self.track_list[track]]}')
 
     def do_print(self, inp):
         """Print arguments"""
