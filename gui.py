@@ -2,6 +2,7 @@
 
 from cmd import Cmd
 from pathlib import Path
+from playsound import playsound
 
 class PPrompt(Cmd):
     prompt = 'prce> '
@@ -59,7 +60,8 @@ class audioPrompt(PPrompt):
 
     def __init__(self):
         self.audioPath = Path('./audio')
-        self.tracks = {x.stem : x for x in self.audioPath.iterdir() if x.is_file()}
+        self.ignore_list = ['.DS_Store']
+        self.tracks = {x.stem : x for x in self.audioPath.iterdir() if (x.is_file() and x.stem not in self.ignore_list)}
         self.track_list = list(self.tracks.keys())
         self.track_list.sort()
         super().__init__()
@@ -74,6 +76,7 @@ class audioPrompt(PPrompt):
     def play(self, track):
         print(f'\nThis is where {self.track_list[track]} would be played.')
         print(f'  File: {self.tracks[self.track_list[track]]}')
+        playsound(str(self.tracks[self.track_list[track]].resolve()))
 
     def do_print(self, inp):
         """Print arguments"""
