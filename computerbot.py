@@ -15,7 +15,7 @@ class ComputerBot:
         self.icon_emoji = ":minidisc:"
         self.timestamp = ""
 
-    def get_message_payload(self):
+    def get_message_payload(self, text):
         return {
             "ts": self.timestamp,
             "channel": self.channel,
@@ -24,14 +24,11 @@ class ComputerBot:
             "blocks": [
                 self.WELCOME_BLOCK,
                 self.DIVIDER_BLOCK,
-                *self._get_msg_block(),
+                *self._get_msg_block(text),
             ],
         }
 
-    def _get_msg_block(self):
-        text = (
-            "This is a test message."
-            )
+    def _get_msg_block(self, text):
         return self._get_msg_block_content(text)
 
     @staticmethod

@@ -8,6 +8,8 @@ from computerbot import ComputerBot
 # For simplicity we'll store our app data in-memory with the following data structure.
 # messages_sent = {"channel": {"user_id": ComputerBot}}
 messages_sent = {}
+_my_user_id = 'U2VMD4VD3'
+_my_channel_id = 'DLVS4DN22'
 
 
 def start_computerbot(web_client: slack.WebClient, user_id: str, channel: str):
@@ -15,7 +17,8 @@ def start_computerbot(web_client: slack.WebClient, user_id: str, channel: str):
     computerbot = ComputerBot(channel)
 
     # Get the onboarding message payload
-    message = computerbot.get_message_payload()
+    text = "```\nThis is a test message\n```"
+    message = computerbot.get_message_payload(text)
 
     # Post the onboarding message in Slack
     response = web_client.chat_postMessage(**message)
@@ -129,14 +132,26 @@ def message(**payload):
     user_id = data.get("user")
     text = data.get("text")
 
+    user_list = web_client.users_list()['members']
+    users = [user["name"] for user in user_list if user["id"] == user_id]
+    
+    print(users)
+
     if text and text.lower() == "start":
         return start_computerbot(web_client, user_id, channel_id)
+    
+    elif (channel_id in messages_sent) and (user_id in messages_sent[channel_id]):
+        # Get the original bot.
+        computerbot = messages_sent[_my_channel_id][_my_user_id]
+        message = computerbot.get_message_payload(f"<@{user_id}>! said:\n\t{text}")
+        # Post the message in Slack
+        response = web_client.chat_postMessage(**message)
 
 
 if __name__ == "__main__":
-    logger = logging.getLogger()
-    logger.setLevel(logging.DEBUG)
-    logger.addHandler(logging.StreamHandler())
+    #logger = logging.getLogger()
+    #logger.setLevel(logging.DEBUG)
+    #logger.addHandler(logging.StreamHandler())
     ssl_context = ssl_lib.create_default_context(cafile=certifi.where())
     slack_token = os.environ["SLACK_BOT_TOKEN"]
     rtm_client = slack.RTMClient(token=slack_token, ssl=ssl_context)
